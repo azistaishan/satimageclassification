@@ -11,7 +11,7 @@ hidden_layer_1 = tf.keras.layers.Dense(128, activation='relu')(input_layer)
 # Define the second hidden layer with ReLU activation
 hidden_layer_2 = tf.keras.layers.Dense(64, activation='relu')(hidden_layer_1)
 
-num_classes = 8
+num_classes = 4
 # Define the output layer with softmax activation for classification
 output_layer = tf.keras.layers.Dense(num_classes, activation='softmax')(hidden_layer_2)
 # 'num_classes' should be the number of classes in your classification problem
