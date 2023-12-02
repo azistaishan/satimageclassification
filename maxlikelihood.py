@@ -8,6 +8,7 @@ from sklearn.preprocessing import LabelBinarizer
 import seaborn as sns
 import rasterio as rio
 import ipdb
+import time
 class MLClassifier:
     """
     Classify satellite image data using maximum likelihodd classifier:
@@ -145,6 +146,7 @@ class MLClassifier:
         self.scalars = []
         
         n = x.shape[0]
+        self.sigma = []
         for i in range(self.nclasses):
             
             # subset of obesrvations for label i
@@ -154,6 +156,7 @@ class MLClassifier:
             
             # rowvar = False, this is to use columns as variables instead of rows
             sigma = np.cov(cls_x, rowvar=False)
+            self.sigma.append(sigma)
             if np.sum(np.linalg.eigvals(sigma) <= 0) != 0:
                 # if at least one eigenvalue is <= 0 show warning
                 # print(f'Warning! Covariance matrix for label {cls} is not positive definite!\n')
@@ -309,4 +312,31 @@ if __name__ == '__main__':
         test.fit(x = test.x_train, y=test.y_train)
         #test.classifyimg(imgFpath=rasterFile, outFpath=outFile )
         return test
-    test = testcase2()
+    def testcase3():
+        """
+        Accuracy test for the single band image classification
+        """
+        trainingcsv = r"D:\NewImage\Simulation\TestData\trainingSample.csv"
+        
+        test = MLClassifier(dfFpath=trainingcsv, extract=True)
+        start_time = time.time()
+        test.fit(x = test.x_train, y=test.y_train)
+        print("Time taken for the training: ", time.time()-start_time)
+        test.classification_model()
+        return test
+
+    def testcase4():
+        """
+        Accuracy test for the single band image classification
+        """
+        trainingcsv = r"D:\NewImage\Simulation\TestData\trainingSample3.csv"
+        print("Running")
+        test = MLClassifier(dfFpath=trainingcsv, extract=True)
+        start_time = time.time()
+        test.fit(x = test.x_train, y=test.y_train)
+        print("Time taken for the training: ", time.time()-start_time)
+        test.classification_model()
+        return test
+    # test = testcase2()
+
+    test = testcase3()

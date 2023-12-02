@@ -28,6 +28,7 @@ from datetime import datetime
 from maxlikelihood import MLClassifier
 from sklearn.preprocessing import LabelEncoder
 import joblib
+import time
 class Classify:
     """
     Set of methods required to train and test the cl
@@ -236,6 +237,8 @@ class Classify:
         if noClassThres is not None:
             classMaxProb = np.max(self.predProb, axis=1)
             thresIdxs = np.where(classMaxProb<=noClassThres)[0]
+            # If the prediction yields class as 5 then +1 gives class as 6. Should be 9 here
+            # If class numbers as 8
             predictions[thresIdxs] = max(predictions)+1
         predictions = predictions.reshape(img.shape[1:])
         meta.update(count=1)
@@ -247,15 +250,36 @@ class Classify:
 
 if __name__ == "__main__":
     def testcase1():
-        trainingcsv = r"D:\Ishan\imageProcessing\TestData\trainingSample.csv"
+        """
+        Single Image RFC Classification test
+        """
+        trainingcsv = r"D:\NewImage\Simulation\TestData\trainingSample.csv"
         test = Classify(dfFpath = trainingcsv, extract=True)
         print('Starting training')
+        start_time = time.time()
         test.randomForest()
-        modelOutPath = r"D:\Ishan\imageProcessing\TestData\Models\rfc_Model_singleImg.joblib"
+        modelOutPath = r"D:\NewImage\Simulation\ModelOut\Run20231121\rfc_Model_singleImg.joblib"
+        print(f'Time taken is {time.time()-start_time}')
         print('Saving model')
         test.saveModel(saveFpath = modelOutPath)
         #Model testing of Random Forest
         test.classification_model(test.rfcModel)
+    def testcase0():
+        """
+        Time series NDVI Classification 
+        """
+        trainingcsv = r"D:\NewImage\Simulation\TestData\trainingSample3.csv"
+        test = Classify(dfFpath = trainingcsv, extract=True)
+        print('Starting training')
+        start_time = time.time()
+        test.randomForest()
+        modelOutPath = r"D:\NewImage\Simulation\ModelOut\Run20231121\rfc_Model_ndvitimeseries.joblib"
+        print(f'Time taken is {time.time()-start_time}')
+        print('Saving model')
+        test.saveModel(saveFpath = modelOutPath)
+        #Model testing of Random Forest
+        test.classification_model(test.rfcModel)
+
     def testcase2():
         modelFile = r"D:\NewImage\Simulation\TestData\Models\rfc_Model_20230212.joblib"
         rasterFile = r"D:\Images\rgbnir_new\20230212T050931_20230212T051514_T44QKF.tif"
@@ -307,4 +331,4 @@ if __name__ == "__main__":
         print(test.model)
         test.classification_model()
     # Run Testcases:
-    test = testcase2()
+    test = testcase0()
