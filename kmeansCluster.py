@@ -6,8 +6,12 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import matplotlib.dates as mdates
 from plotGraps import getGraphs
+import cv2 as cv
+import time
+import ipdb
+
 class kMeansCluster:
-    def __init__(self,imageFpath, dateFpath, ):
+    def __init__(self,imageFpath , dateFpath, ):
         self.imageFpath = imageFpath
         self.dateFpath = dateFpath
         self.getImage(self.imageFpath)
@@ -64,9 +68,11 @@ class kMeansCluster:
             else:
                 print("Save location missing")
     def getKmeansCV(self, n_clusters=50, ret=False, savePath=None):
+        #ipdb.set_trace()
         self.n_clusters = n_clusters
         shape = self.shape
-        tempImg = np.zeros(shape[1], shape[2], shape[3])
+        print(self.shape)
+        tempImg = np.zeros((shape[1], shape[2], shape[0]))
         for i in range(shape[0]):
             tempImg[:,:,i] = self.Image[i]
         satz = tempImg.reshape((-1, tempImg.shape[2]))
@@ -85,8 +91,20 @@ class kMeansCluster:
             if savePath==None:
                 print("Please enter the save path")
             with rio.open(savePath, 'w', **meta) as dst:
-                dst.write(labelImg)
+                dst.write(labelImg,1)
     def createGraph(self,saveFolder=None):
         gph = getGraphs(kmobj=self)
         gph.plotAllClusters(saveFolder = saveFolder)
 
+if __name__ == "__main__":
+    rasterFile = r"D:\NewImage\Simulation\TestData\stackimg\ndvi_corrected_stack30D.tif"
+    dateFile = r"D:\NewImage\Simulation\TestData\dates2.txt"
+    saveFile = r"D:\NewImage\Simulation\TestData\clusterOut\cluster_10.tif"
+    def testcase0():
+        test = kMeansCluster(imageFpath=rasterFile, dateFpath=dateFile)
+        start_time = time.time()
+        #test.getKmeansCV(n_clusters=10, savePath = saveFile)
+        test.getKmeansTSL(n_clusters=10, savePath=saveFile)
+        print(f"Time taken in clustering {time.time()-start_time}")
+        return test
+    test = testcase0()

@@ -1,8 +1,8 @@
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
-import geopandas as gpd
+#import geopandas as gpd
 import pandas as pd
-from rasterstats import zonal_stats
+#from rasterstats import zonal_stats
 import os
 import numpy as np
 import seaborn as sns
@@ -21,7 +21,7 @@ import time
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import roc_curve, auc
 from rasterio.mask import mask
-import geopandas as gpd
+#import geopandas as gpd
 import glob
 from sklearn.ensemble import RandomForestClassifier
 from datetime import datetime
@@ -293,14 +293,16 @@ if __name__ == "__main__":
         """
         Test for time series image
         """
-        modelFile = r"D:\Ishan\imageProcessing\TestData\Models\rfcModel.joblib"
+        # modelFile = r"D:\Ishan\imageProcessing\TestData\Models\rfcModel.joblib"
+        modelFile = r"D:\NewImage\Simulation\ModelOut\Run20231121\rfc_Model_ndvitimeseries.joblib"
         rasterFile = r"D:\Ishan\imageProcessing\TestData\stackimg\ndvi_corrected_stack30D.tif"
         outFile = r"D:\Ishan\imageProcessing\TestData\ClassOut\rvcTimeSeriesClassification.tif"
-        csvFile = r"D:\Ishan\imageProcessing\TestData\trainingSample2.csv"
+        csvFile = r"D:\NewImage\Simulation\TestData\trainingSample3.csv"
         dateFile = r"D:\Ishan\imageProcessing\TestData\dates2.txt"
         test = Classify(dfFpath=csvFile, extract=True, modelFpath=modelFile)
         #test.classification_model()
-        test.classifyimg(imgFpath=rasterFile, outFpath=outFile, dateFpath=dateFile)
+        # test.classifyimg(imgFpath=rasterFile, outFpath=outFile, dateFpath=dateFile)
+        return test
     def testcase4():
         """
         Test for max likelihood
@@ -331,4 +333,4 @@ if __name__ == "__main__":
         print(test.model)
         test.classification_model()
     # Run Testcases:
-    test = testcase0()
+    test = testcase3()
