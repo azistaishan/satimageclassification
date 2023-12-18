@@ -1,0 +1,17 @@
+numpy
+scipy
+scikit-learn
+imblearn
+rasterio
+tensorflow[and-cuda]
+opencv-python
+matplotlib
+seaborn
+pandas
+joblib
+tslearn
+ipdb
+geopandas
+fiona
+earthengine-api
+geemap

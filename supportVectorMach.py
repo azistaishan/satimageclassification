@@ -7,7 +7,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.metrics import roc_curve, auc
 from randomforest import RFClassifiy
 import joblib
-class SVMClassification(Classifiy):
+class SVMClassification():
     """
     Classify satellite image data using Support Vector Machine
 

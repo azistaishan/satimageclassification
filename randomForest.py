@@ -29,7 +29,7 @@ from maxlikelihood import MLClassifier
 from sklearn.preprocessing import LabelEncoder
 import joblib
 import time
-class Classify:
+class RandomForest:
     """
     Set of methods required to train and test the cl
     """
@@ -90,7 +90,7 @@ class Classify:
             self.x_train = scaler.transform(self.x_train) # Or fit_transform ?
             self.x_test = scaler.transform(self.x_test) # Or fit_transform ? 
         self.extractState = True
-    def randomForest(self, params= None, n_jobs=-1):
+    def fit(self, params= None, n_jobs=-1):
 
         rfc = RandomForestClassifier(n_jobs=n_jobs, verbose=1)
         if params is None:
@@ -105,8 +105,7 @@ class Classify:
         gsCV_rfc.fit(self.x_train,self.y_train)
         para_n=gsCV_rfc.best_params_
         best_rbf_classifier=gsCV_rfc.best_estimator_
-        self.rfcModel = best_rbf_classifier
-        self.model = self.rfcModel
+        self.model = best_rbf_classifier
 
     def maximumLikelihood(self,):
         mlc = MLClassifier()
