@@ -151,5 +151,4 @@ To process images for further analysis. Make composite images useful for works s
 ---
 
 ## To-Dos
-- [ ] Code refactoring
-- [X] ReadMe.md  
+- [X] ReadMe.md
