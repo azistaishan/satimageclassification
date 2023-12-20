@@ -1,3 +1,9 @@
+# imageProcessing
+To process images for further analysis. Make composite images useful for works such as time series analysis, supervised and unsupervised classification of land
+
+---
+## Files and Summaries
+
 <details>
 <summary><b>1. plotGraps.py:</b> <i>The `getGraphs` class facilitates plotting graphs for k-means clustering. It allows the plotting of trends for specific cluster IDs or all clusters, offering options for random pixel selection, specifying y-axis range, and saving the generated plots to a designated folder.</i></summary>
 
