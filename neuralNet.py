@@ -4,12 +4,17 @@ import time
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from imblearn.over_sampling import RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
 import numpy as np
 import rasterio as rio
 # Define the input layer
 
 class NeuralNet:
-    def __init__(self, dfFpath=None, extract=False, modelFpath=None):
+    def __init__(self, dfFpath=None, extract=False, 
+                 modelFpath=None,
+                 overSample=False,
+                 underSample=False):
         self.encodingShift = 1
         self.extractState = False
         # Load model option
@@ -17,7 +22,7 @@ class NeuralNet:
         if dfFpath is not None:
             self.df = pd.read_csv(dfFpath)
         if extract is True:
-            self.extractxy()
+            self.extractxy(oversample=overSample, undersample=underSample)
             print('Training and testing datasets extracted')
         if modelFpath is not None:
             self.loadModel(modelFpath)

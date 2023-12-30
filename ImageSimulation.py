@@ -13,11 +13,45 @@ import ipdb
 import pandas as pd
 class imagesimulation:
     """
-    In this class,
-    Docstring work in progress
-    TODO
+    #TODO
+    Simulate the phenotype and create a simulate Satellite Image Time Series data using the 
+    simulated (SITS) data.
+
+    Atributes:
+    ---------
+    refImg: Str
+        Path to the reference image. Can be a single day data or can be a SITS data
+    paramsFile: Str
+        Path to the parameters file which contains dictionary of the parameters to create 
+        simulated data
+
+    Methods:
+    -------
+
+        gaussian
+        invgaussian
+        linear
+        sigmoid
+        invsigmoid
+        phenocurve
+        plotwithRandom
+        plotAllParams
+        genwithRandom
+        loadParams
+        fillClusters
     """
     def __init__(self, refImg = None, paramsFile = None):
+        """
+        Initialize the imagesimulation class
+        
+        Parameters:
+        -----------
+        refImg: Str
+            Path to the reference image. Can be a single day data or can be a SITS data
+        paramsFile: Str
+            Path to the parameters file which contains dictionary of the parameters to create 
+            simulated data
+        """
         if refImg is not None:
             with rio.open(refImg) as dst:
                 self.Img = dst.read(1)
@@ -28,26 +62,119 @@ class imagesimulation:
         else:
             print('No parameter files given')
     def gaussian(self,x, amp, mu, sig):
+        """
+        Method to create gaussian curve using the input parameters
+        
+        Parameters:
+        ----------
+        x: 1-d np array of values
+        amp: float/int
+            Amplitude of gaussian
+        mu: float/int 
+            Mean value of gaussian curve
+        sig: float/int
+            Standard deviation of gaussian curve
+        
+        Returns:
+        --------
+        gaussian curve: (amp/sqrt(2*pi*sig))*exp((x-mu)/2*sig)
+        """
         return (
             amp/ (np.sqrt(2.0 * np.pi) * sig) * np.exp(-np.power((x - mu) / sig, 2.0) / 2)
         )
     def invgaussian(self,x, amp, mu, sig):
+        """
+        Method to create inverse gaussian, gaussian with inverse amplitude
+
+        Parameters:
+        ----------
+        x: 1-d np array of values
+        amp: float/int
+            Amplitude of gaussian
+        mu: float/int 
+            Mean value of gaussian curve
+        sig: float/int
+            Standard deviation of gaussian curve
+        
+        Returns:
+        --------
+        gaussian curve: -(amp/sqrt(2*pi*sig))*exp((x-mu)/2*sig)
+        """
+
         return -1*self.gaussian(x, amp, mu, sig)
+
     def linear(self,x, theta, c):
+        """
+        Method to create a linear function from x values
+
+        Parameters:
+        ----------
+        x: 1-d Array
+            Array of int/float values to 
+        theta: Angle of line in degrees
+        c: The y intercept of the linear function
+    
+        Returns:
+        -------
+        tan(theta)*x + c
+        """
         # print('Theta is:\t',theta)
         m = math.tan(math.radians(theta))
         return(m*x + c)
     def sigmoid(self,x, ctr, wf ):
         """
-        wf: Width factor
-        ctr: Center
+        Method to create sigmoid function from x values
+
+        Parameters:
+        -----------
+        x: 1-d Array
+            Array of int/float values to 
+        wf: int/float
+            Width factor
+        ctr: int/float
+            Center of the sigmoid function
+
+        Returns:
+        --------
+        1/(1+exp(x-ctr)/wf)
         """
-    
         return (1+np.exp(-(x-ctr)/wf))**-1
+
     def invsigmoid(self,x, ctr, wf):
+        """
+        Method to create inverse sigmoid function from x values
+
+        Parameters:
+        ----------
+        x: 1-d Array
+            Array of int/float values to 
+        wf: int/float
+            Width factor
+        ctr: int/float
+            Center of the sigmoid function
+
+        Returns:
+        --------
+        1 - 1/(1+exp(x-ctr)/wf)
+
+        """
         return 1 - self.sigmoid(x,ctr,wf)
-    def phenocurve3(self,x, **kwargs):
-        # print('Here in phenocurve3, kwargs: \n', kwargs)
+    def phenocurve(self,x, **kwargs):
+        """
+        Method to create phenotype using the parameters 
+
+        Parameters:
+        ----------
+        x: 1-d Array
+            Array of int/float values to 
+        kwargs: Dictionary
+            Dictionary of the parameters of sigmoid, invsigmoid, linear, gaussian and invgaussian
+        
+        Returns:
+        -------
+        Phenocurve (1-d Array)
+        """
+        # print('Here in phenocurve, kwargs: \n', kwargs)
         # print(kwargs['theta'])
         line = self.linear(x, theta=kwargs['theta'], c = kwargs['c'])
         gauss1 = self.invgaussian(x, amp=kwargs['amp1'],mu=kwargs['mu1'], sig=kwargs['sigma1'])
@@ -60,7 +187,31 @@ class imagesimulation:
                         save=False, fileName = None, showPlot=False,y_lim = (-0.1,1),
                         dateFile=None, **kwargs):
         """
-        If datefile is given then num of Points is not considered.
+        Plot the n phenocurves with random gaussian generating the values across the
+        given value of pheno curve as center and sigma as the standard deviation
+
+        Parameters:
+        ----------
+        sigma: int/float
+            Standard deviation for the gaussian random number generator
+        numOfPoints: int
+            Length of phenocurve equal to number of dates or x. If datefile is given,
+            numOfPoints is number of dates, else
+        n: int
+            Number of phenocurves to simulate
+        save: Boolean
+            If True, the phenocurves plotted will be saved
+        fileName: str
+            Output file name of the jpg file saved after plotting the pheno curves
+        showPlot: Boolean
+            If True, the plot will be displayed for the user
+        y_lim: tuple
+            The lower and higher limit of the graphs to plot the pheno curves
+        dateFile: str
+            Path to a datefile: File containing dates, number of dates equal to
+            length of x array
+        kwargs: dict
+            Parameters of phenocurve
         """
         plt.clf()
         plt.ioff()
@@ -77,7 +228,7 @@ class imagesimulation:
         sigmaArr = np.zeros(numOfPoints)+sigma
         # print(sigmaArr)
         # print('Here at 73, kwargs: \n', kwargs)
-        curve =self.phenocurve3(x,**kwargs) 
+        curve =self.phenocurve(x,**kwargs) 
         i = 0
         # ipdb.set_trace()
         while i < n:
@@ -96,7 +247,23 @@ class imagesimulation:
     def plotAllParams(self, sigma=0.05, num_of_rand=1000, dateFile=None, save=True, 
     folder=None):
         """
-        Parameter file needed 
+        Plot the n phenocurves with random gaussian generating the values across the
+        given value of pheno curve as center and sigma as the standard deviation
+
+        Parameters:
+        ----------
+        sigma: int/float
+            Standard deviation for the gaussian random number generator
+        num_of_rand: int
+            Number of phenocurves to simulate
+        dateFile: str
+            Path to a datefile: File containing dates, number of dates equal to
+            length of x array
+        save: Boolean
+            If True, the phenocurves plotted will be saved
+        folder: str
+            Output folder name for the jpg files to be saved in after plotting the 
+            pheno curves
         """
         plotList = []
         for i in self.paramsDict.keys():
@@ -109,10 +276,28 @@ class imagesimulation:
             print('Images saved for key, ',i)
 
     def genwithRandom(self,x, sigma, n=100, **kwargs):
+        """
+        Generate the phenocurves using the base phenocuve made by parameters given in kwargs
+
+        Parameters:
+        ----------
+        x: 1-d Array
+            Array of int/float values to 
+        sigma: int/float
+            Standard deviation for the gaussian random number generator
+        n: int
+            Number of phenocurves to simulate
+        kwargs: dict
+            Parameters of phenocurve
+        
+        Returns:
+        --------
+        2-d array (n,len(x)) with each row being a simulated phenocurve
+        """
         #sigmaArr = list(map(lambda x: x + sigma*np.random.rand(), np.zeros(len(x))))
         sigmaArr = np.zeros(len(x))+sigma
         # print(sigmaArr)
-        curve =self.phenocurve3(x,**kwargs) 
+        curve =self.phenocurve(x,**kwargs) 
         #plt.plot(x, curve)
         i = 0
         tofill = np.zeros((n,len(x)))
@@ -123,14 +308,33 @@ class imagesimulation:
             i+=1
         return tofill
     def loadParams(self,fileName):
+        """
+        Loads the parameters from the file given as input
+
+        Parameters:
+        ----------
+        fileName: str
+            Path to the file in which the parameters for the phenocurves are saved
+        
+        Returns:
+        --------
+        None
+        """
         with open(fileName, 'rb') as handle:
             self.paramsDict = pickle.load(handle)
     def fillClusters(self,imgnum=30, sigma=0.05):
         """
-        clusterFile: File path to the image with clusters defined
-        paramsDict: Dictionary of parameters used to generate phenotype
-        imgnum: Number of images to be stacked
-        sigma: Standard Deviation to be applied for 
+        Creates a simulated image with number of channes as imgnum
+        Parameters:
+        ----------
+        imgnum: int
+            Number of images to be stacked
+        sigma: float
+            Standard Deviation to be applied for 
+        
+        Returns:
+        --------
+        image array
         """
         x = np.arange(imgnum)
         # with rio.open(clusterFile) as dst:
@@ -149,6 +353,16 @@ class imagesimulation:
                 inpimg[:,idxs[0][j],idxs[1][j]] = tofill[j]
         return inpimg
     def saveclusters(self,outfile, imgnum=30, sigma=0.05):
+        """
+        Parameters:
+        ----------
+        outfile: str
+            Path to the output file
+        imgnum: int
+            Number of images to be stacked
+        sigma: float
+            Standard Deviation to be applied for 
+        """
         # print('Saving the fille for sigma: ',sigma)
         check = self.fillClusters(imgnum=imgnum, sigma=sigma)
         profile = copy.copy(self.imgProfile)
@@ -158,6 +372,9 @@ class imagesimulation:
         print('File written')
 
 class simulationTraining:
+    """
+
+    """
     def __init__(self,classImgFile, simImgFile, trainingperclass=10000):
         with rio.open(classImgFile) as dst:
             self.classImg = dst.read(1)

@@ -5,7 +5,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import SVC
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import roc_curve, auc
-from randomforest import RFClassifiy
+from randomForest import RandomForest
 import joblib
 class SVMClassification():
     """
@@ -37,7 +37,7 @@ class SVMClassification():
         """
         if modelFpath is not None:
             self.svModel = joblib.load(modelFpath)
-        RFClassifiy.__init__(self,dfFpath=dfFpath, extract=extract)
+        RandomForest.__init__(self,dfFpath=dfFpath, extract=extract)
     def supportVectorMachine(self, param_grid=None):
         """
         Applies the support vector machine to the training data

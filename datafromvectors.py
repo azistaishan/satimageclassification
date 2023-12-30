@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 import numpy as np
 import copy
-import pdb
+import ipdb
 import os
 from pathlib import Path
 class dataFromVectors:
@@ -123,7 +123,8 @@ class dataFromVectors:
                     pass
         self.rawDf = df
 
-    def extractData(self,nofill=65526, key = ['Class'], scaleFactor=1):
+    def extractData(self,folder, nofill=65526, key = ['Class'], scaleFactor=1):
+        # ipdb.set_trace()
         if self.TimeSeries == True:
             try:
                 self.julianDates
@@ -180,7 +181,7 @@ class dataFromVectors:
                         'height': out_img.shape[1],
                         'transform': transformed
                     })
-                    folder = r"D:\Ishan\imageProcessing\TestData\testSample"
+                    # folder = r"D:\Ishan\imageProcessing\TestData\testSample"
                     fileName = f"{feat['properties']['Class']}_{count}.tif"
                     totalFile = Path(folder, fileName)
                     with rio.open(totalFile, 'w', **outProfile) as dst:

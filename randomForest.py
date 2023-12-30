@@ -3,7 +3,6 @@ from sklearn.preprocessing import StandardScaler
 #import geopandas as gpd
 import pandas as pd
 #from rasterstats import zonal_stats
-import os
 import numpy as np
 import seaborn as sns
 import rasterio as rio
@@ -22,18 +21,19 @@ from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import roc_curve, auc
 from rasterio.mask import mask
 #import geopandas as gpd
-import glob
 from sklearn.ensemble import RandomForestClassifier
 from datetime import datetime
 from maxlikelihood import MLClassifier
 from sklearn.preprocessing import LabelEncoder
-import joblib
-import time
+import joblib, ipdb
 class RandomForest:
     """
     Set of methods required to train and test the cl
     """
-    def __init__(self,dfFpath = None, extract=False, modelFpath=None):
+    def __init__(self,dfFpath = None, extract=False,
+                overSample=False,
+                underSample=False,
+                modelFpath=None):
         self.encodingShift = 1
         self.extractState = False
         if modelFpath is not None:
@@ -41,9 +41,11 @@ class RandomForest:
         if dfFpath is not None:
             self.df = pd.read_csv(dfFpath)
         if extract is True:
-            self.extractxy()
+            self.extractxy(oversample=overSample, undersample=underSample)
             print('Training and Testing datasets extracted')
-    def extractxy(self,oversample=False, undersample=False, scale=False, testSize=0.2, randomState=42):
+    def extractxy(self,oversample=False, undersample=False,
+                  scale=False, testSize=0.2, 
+                  randomState=42):
         """
         The expected format of the data is "Class", "Val_0",---,"Val_30","Day_0",---,"Day_30"
 
@@ -114,7 +116,7 @@ class RandomForest:
         self.maxlikehood = mlc
 
     def saveModel(self,saveFpath):
-        joblib.dump(self.rfcModel, saveFpath)
+        joblib.dump(self.model, saveFpath)
     
     def loadModel(self, loadFpath):
         self.model = joblib.load(loadFpath)
@@ -202,6 +204,7 @@ class RandomForest:
             # self.extractxy()
         # if self.y_train.dtype == "O":
             # print("The prediction is string type")
+        # ipdb.set_trace()
         if modelFpath is not None:
             self.model = joblib.load(modelFpath)
         # TODO if model is already there, then not required
@@ -225,7 +228,13 @@ class RandomForest:
             print('Datefile not given, image not a time series')
             flatArr = img.reshape(img.shape[0],-1).T
         predictions = self.model.predict(flatArr)
-        self.predProb = self.model.predict_proba(flatArr)
+        if noClassThres is not None:
+            self.predProb = self.model.predict_proba(flatArr)
+            classMaxProb = np.max(self.predProb, axis=1)
+            thresIdxs = np.where(classMaxProb<=noClassThres)[0]
+            # If the prediction yields class as 5 then +1 gives class as 6. Should be 9 here
+            # If class numbers as 8
+            predictions[thresIdxs] = max(predictions)+1
         if predictions.dtype =='O':
             print('Predictions are string type')
             predictions = self.label_Encoder.fit_transform(predictions)
@@ -233,12 +242,6 @@ class RandomForest:
             print('0 cannot be a class as this messes with the nodata value')
             # This will mess with the no data value, hence increase by encodingShift
             predictions += self.encodingShift
-        if noClassThres is not None:
-            classMaxProb = np.max(self.predProb, axis=1)
-            thresIdxs = np.where(classMaxProb<=noClassThres)[0]
-            # If the prediction yields class as 5 then +1 gives class as 6. Should be 9 here
-            # If class numbers as 8
-            predictions[thresIdxs] = max(predictions)+1
         predictions = predictions.reshape(img.shape[1:])
         meta.update(count=1)
         profile.update(count=1)

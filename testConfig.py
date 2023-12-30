@@ -1,7 +1,8 @@
 # For 1D Image
-trainingcsv1D = r"/home/ishan/workingDir/satImageClassification/InputDatasets/trainingSample.csv"
+# trainingcsv1D = r"/home/ishan/workingDir/satImageClassification/InputDatasets/trainingSample.csv"
+trainingcsv1D = "/home/ishan/workingDir/AFR/TrainingData/trainingdata.csv"
 inRaster1D = r"/home/ishan/workingDir/satImageClassification/InputDatasets/rgbnir_new/20230212T050931_20230212T051514_T44QKF.tif"
-
+# inRaster1D = "/home/ishan/workingDir/AFR/ClippedRaster/1r121_5b_composite_clipped.tif"
 # For 30D Image
 trainingcsv30D = r"/home/ishan/workingDir/satImageClassification/InputDatasets/trainingSample3.csv"
 inRaster30D = r"/home/ishan/workingDir/satImageClassification/InputDatasets/ndvi_corrected_stack30D.tif"
@@ -14,11 +15,11 @@ rfcModelOutPath30D = r"/home/ishan/workingDir/satImageClassification/RandomFores
 rfcModelInPath30D = r"/home/ishan/workingDir/satImageClassification/RandomForest/Model/RFCModel30D.joblib"
 rfcOutRaster30D = r"/home/ishan/workingDir/satImageClassification/RandomForest/Image/RFCRaster30D.tif"
 rfcParams = {
-        'n_estimators': [100],  # Number of decision trees in the forest
+        'n_estimators': [200],  # Number of decision trees in the forest
         'max_depth': [10],       # Maximum depth of the decision trees
-        'min_samples_split': [100],  # Minimum number of samples required to split a node
-        'min_samples_leaf': [100],    # Minimum number of samples required to be at a leaf node
-        'criterion':['gini','entropy'],        
+        'min_samples_split': [50],  # Minimum number of samples required to split a node
+        'min_samples_leaf': [50],    # Minimum number of samples required to be at a leaf node
+        'criterion':['gini'],        
         }
 
 #Settings for Support Vector Machine
