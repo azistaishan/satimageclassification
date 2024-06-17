@@ -5,3 +5,5 @@ TestData/*
 .vscode
 venv
 venv/*
+.venv
+.venv/*

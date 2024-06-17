@@ -15,3 +15,6 @@ geopandas
 fiona
 earthengine-api
 geemap
+ipython
+gdal
+jupyterlab
