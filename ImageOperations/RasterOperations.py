@@ -96,7 +96,7 @@ def calculate_func(image_file,
                    add_new_layer=True,
                    band_dict =bf.sent_bands_dict):
     image,_,profile,_ = openRaster(image_file)
-    band_profile = bp.update_band_profile(band_dict, image)
+    band_profile = bf.update_band_profile(band_dict, image)
     if len(raster_func_list) >1 and add_new_layer is True:
         raise ValueError('add_new_layer cannot be False when raster_func_list has more than 1 function')
     for raster_func in raster_func_list:

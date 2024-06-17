@@ -5,7 +5,7 @@ image_var_name = 'raster'
 
 image_batch_dict = dict()
 # dictionary type {'raster_1': {'inp_files':[], 'out_file': ''}
-class ImageBatchVars:
+class ImageBatchKeys:
     def __init__(self,):
         self.input_data = 'input_data'
         self.parent_folder = 'parent_folder'
@@ -13,9 +13,9 @@ class ImageBatchVars:
         self.files_list = 'files_list'
         self.date = 'date'
         self.clipped_files = 'clipped_files'
+        self.calculated_files = 'calculated_files'
         self.mosaicked_file = 'mosaicked_file'
         self.stacked_img = 'stacked_image'
-
 def setup_image_dict():
     image_super_dict = {'input_data': dict(),
                         'parent_folder': Path('.'),

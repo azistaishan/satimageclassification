@@ -126,7 +126,7 @@ class BatchImageProcess:
                                key_to_stack=key_to_stack,
                                stack_name=stack_name)
 
-    def Sentinel_BandStack01(self,):
+    def Sentinel_Stack01(self,):
         for key in self.input_dict.keys():
             # Raster_1 type keys
             files_list = self.input_dict[key][ib_keys.files_list]
@@ -136,4 +136,4 @@ class BatchImageProcess:
                 files_list=self.input_dict[key][ib_keys.calculated_files],
                 add_name=self.input_dict[key][ib_keys.date])
         # Stack all Images
-        self.image_batch[ib_keys.stacked_img] = batch_stack()
+        self.image_batch[ib_keys.stacked_img] = self.batch_stack()
