@@ -25,5 +25,5 @@ rgbnir_bands_dict = {
 def update_band_profile(band_dict, image):
     band_profile = band_dict.copy()
     for k in band_profile.keys():
-        band_profile.update({k:x[band_profile[k]]})
+        band_profile.update({k:image[band_profile[k]]})
         return band_profile

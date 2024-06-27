@@ -4,6 +4,7 @@ from rasterio.merge import merge
 import numpy as np
 import fiona
 import ImageOperations.BandProfile as bf
+import ipdb
 
 def openVector(shp_file):
     shp = fiona.open(shp_file)
@@ -38,9 +39,10 @@ def clipFromVector(raster_file, shp_file, out_file, **kwargs):
             'filled': Boolean
 
     """
+    # ipdb.set_trace()
     with rio.open(raster_file) as dst:
         image = dst.read()
-        meta = dst.meta()
+        meta = dst.meta
     shp = openVector(shp_file)
     dst = rio.open(raster_file) 
     try: nofill = kwargs['no_fill']
@@ -67,7 +69,7 @@ def clipFromVector(raster_file, shp_file, out_file, **kwargs):
 def mosaicRaster(files_list, out_file, **kwargs):
     mosaic, mosaic_transform = merge(files_list)
     with rio.open(files_list[0]) as dst:
-        meta = dst.meta()
+        meta = dst.meta
     out_meta = meta.copy()
     out_meta.update({'height':mosaic.shape[1],
                      'width':mosaic.shape[2],
@@ -79,16 +81,21 @@ def mosaicRaster(files_list, out_file, **kwargs):
 
 def stackImages(files_list, out_file, **kwargs):
     #Check the num of files, atleaset >=2
+    # print('Here at line 84')
+    # ipdb.set_trace()
     if len(files_list)<2:
-        return 'Only single file in the list'
+        raise ValueError('Cannot Stack, Only single file in the list')
     stacked,_,profile,_ = openRaster(files_list[0])
     for i in files_list[1:]:
         img,_,_,_ = openRaster(i)
         stacked = np.dstack((stacked, img))
+    # print(stacked)
+    # ipdb.set_trace()
     profile.update({'count':stacked.shape[0]})
     dst = rio.open(out_file, 'w', **profile)
     dst.write(stacked)
     dst.close()
+    return out_file
 
 def calculate_func(image_file,
                    out_file,
