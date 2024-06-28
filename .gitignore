@@ -5,3 +5,6 @@ TestData/*
 .vscode
 venv
 venv/*
+.venv
+.venv/*
+desktop.ini
